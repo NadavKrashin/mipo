@@ -5,7 +5,7 @@ import { TextField } from "@mui/material";
 const SearchBar = ({ searchQuery, setSearchQuery }) => {
   return (
     <TextField
-      label="Search"
+      label="חיפוש לפי שם"
       variant="outlined"
       fullWidth
       value={searchQuery}

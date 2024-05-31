@@ -1,9 +1,11 @@
 // src/components/Login.js
 import React, { useState } from "react";
 import { Box, TextField, Button, Autocomplete } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ attendance, setLocalStorageUser }) => {
   const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     try {
@@ -12,12 +14,13 @@ const Login = ({ attendance, setLocalStorageUser }) => {
       if (user) {
         localStorage.setItem("user", JSON.stringify(user));
         setLocalStorageUser(user);
+        navigate("/");
       } else {
-        alert("User not found");
+        alert("משתמש לא נמצא");
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("Login failed");
+      alert("אופס... קרתה שגיאה");
     }
   };
 
@@ -42,8 +45,9 @@ const Login = ({ attendance, setLocalStorageUser }) => {
         }}
         renderInput={(params) => (
           <TextField
+            dir="rtl"
             {...params}
-            label="Username"
+            label="איך קוראים לך?"
             variant="outlined"
             fullWidth
           />
@@ -56,7 +60,7 @@ const Login = ({ attendance, setLocalStorageUser }) => {
         fullWidth
         onClick={handleLogin}
       >
-        Login
+        תכניס אותי
       </Button>
     </Box>
   );

@@ -3,7 +3,7 @@ module.exports = attendanceData = [
   {
     id: 1,
     name: "Admin User",
-    team: "Team 1",
+    team: "צוות 1",
     phone: "1234567890",
     avatar: "",
     present: false,
@@ -14,7 +14,7 @@ module.exports = attendanceData = [
   ...Array.from({ length: 20 }, (_, i) => ({
     id: i + 2,
     name: `User ${i + 2}`,
-    team: `Team ${(i % 9) + 1}`,
+    team: `צוות ${(i % 8) + 1}`,
     phone: `123456789${i + 1}`,
     avatar: "",
     present: false,

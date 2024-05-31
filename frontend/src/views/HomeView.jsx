@@ -55,7 +55,7 @@ const HomeView = ({ attendace, setAttendance }) => {
           />
         </Box>
         <Chip
-          label={`Home: ${filteredHomeUsers.length} / ${attendace.length}`}
+          label={`בבית: ${attendace.length} / ${filteredHomeUsers.length} `}
           color="primary"
           variant="outlined"
           sx={{ mb: 2, ml: 2, fontSize: "1rem", padding: "10px" }}

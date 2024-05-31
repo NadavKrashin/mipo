@@ -13,6 +13,14 @@ const App = () => {
   const [attendance, setAttendance] = useState([]);
   const [localStorageUser, setLocalStorageUser] = useState();
 
+  const currentUser = useMemo(
+    () =>
+      attendance.length && localStorageUser
+        ? attendance.find(({ id }) => id === localStorageUser.id)
+        : null,
+    [localStorageUser]
+  );
+
   useEffect(() => {
     const fetchUser = () => {
       const savedUser = JSON.parse(localStorage.getItem("user"));
@@ -21,17 +29,7 @@ const App = () => {
       }
     };
 
-    const fetchData = async () => {
-      try {
-        const data = await fetchAttendanceData();
-        setAttendance(data);
-      } catch (error) {
-        console.error("Error fetching attendance data:", error);
-      }
-    };
-
     fetchUser();
-    fetchData();
 
     const handleUpdate = (updatedMember) => {
       setAttendance((prevAttendance) =>
@@ -48,77 +46,78 @@ const App = () => {
     };
   }, []);
 
-  const currentUser = useMemo(
-    () =>
-      attendance.length && localStorageUser
-        ? attendance.find(({ id }) => id === localStorageUser.id)
-        : null,
-    [attendance, localStorageUser]
-  );
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchAttendanceData();
+        setAttendance(data);
+      } catch (error) {
+        console.error("Error fetching attendance data:", error);
+      }
+    };
+
+    fetchData();
+  }, [currentUser]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
     setLocalStorageUser(null);
   };
 
-  if (!localStorageUser) {
-    return (
-      <Login
-        attendance={attendance}
-        setLocalStorageUser={setLocalStorageUser}
-      />
-    );
-  }
-
   return (
     <main>
-      {currentUser ? (
-        <BrowserRouter>
-          <Navbar
-            onLogout={handleLogout}
-            isAdmin={currentUser.isAdmin}
-            isMamash={currentUser.isMamash}
-          ></Navbar>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Attendance
-                  attendance={attendance}
-                  setAttendance={setAttendance}
-                  currentUser={currentUser}
-                />
-              }
-            ></Route>
-            {(currentUser.isAdmin || currentUser.isMamash) && (
+      <BrowserRouter>
+        {currentUser ? (
+          <>
+            <Navbar
+              onLogout={handleLogout}
+              isAdmin={currentUser.isAdmin}
+              isMamash={currentUser.isMamash}
+            ></Navbar>
+            <Routes>
               <Route
-                exact
-                path="/home-users"
+                path="/"
                 element={
-                  <HomeUsers
-                    attendace={attendance}
-                    setAttendance={setAttendance}
-                  />
-                }
-              ></Route>
-            )}
-            {currentUser.isAdmin && (
-              <Route
-                exact
-                path="/manage-mamash"
-                element={
-                  <ManageMamashView
+                  <Attendance
                     attendance={attendance}
                     setAttendance={setAttendance}
+                    currentUser={currentUser}
                   />
                 }
               ></Route>
-            )}
-          </Routes>
-        </BrowserRouter>
-      ) : (
-        <></>
-      )}
+              {(currentUser.isAdmin || currentUser.isMamash) && (
+                <Route
+                  exact
+                  path="/home-users"
+                  element={
+                    <HomeUsers
+                      attendace={attendance}
+                      setAttendance={setAttendance}
+                    />
+                  }
+                ></Route>
+              )}
+              {currentUser.isAdmin && (
+                <Route
+                  exact
+                  path="/manage-mamash"
+                  element={
+                    <ManageMamashView
+                      attendance={attendance}
+                      setAttendance={setAttendance}
+                    />
+                  }
+                ></Route>
+              )}
+            </Routes>
+          </>
+        ) : (
+          <Login
+            attendance={attendance}
+            setLocalStorageUser={setLocalStorageUser}
+          />
+        )}
+      </BrowserRouter>
     </main>
   );
 };

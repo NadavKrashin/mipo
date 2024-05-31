@@ -15,21 +15,21 @@ const TeamFilter = ({ selectedTeams, setSelectedTeams }) => {
     const {
       target: { value },
     } = event;
-    setSelectedTeams(typeof value === "string" ? value.split(",") : value);
+    setSelectedTeams(value);
   };
 
-  const teams = Array.from({ length: 9 }, (_, i) => `Team ${i + 1}`);
+  const teams = Array.from({ length: 8 }, (_, i) => `צוות ${i + 1}`);
 
   return (
     <FormControl sx={{ mb: 2, width: "100%" }}>
-      <InputLabel id="team-filter-label">Filter by Team</InputLabel>
+      <InputLabel id="team-filter-label">הצגה לפי צוותים</InputLabel>
       <Select
         labelId="team-filter-label"
         multiple
         value={selectedTeams}
         onChange={handleChange}
         input={
-          <OutlinedInput id="select-multiple-chip" label="Filter by Team" />
+          <OutlinedInput id="select-multiple-chip" label="הצגה לפי צוותים" />
         }
         renderValue={(selected) => (
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>

@@ -93,7 +93,21 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
   );
 
   const handleReset = () => {
-    sendBulkUpdate("present");
+    if (!currentUser.isMamash) {
+      sendBulkUpdate("present");
+    } else {
+      setAttendance(
+        attendance.map((user) => {
+          if (user.team !== currentUser.team) {
+            return user;
+          }
+
+          const newUser = { ...user, present: false };
+          sendUpdate(newUser);
+          return newUser;
+        })
+      );
+    }
   };
 
   return (
@@ -132,7 +146,10 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
                 direction="rtl"
                 sx={{ mb: 2, ml: 2 }}
               />
-              {currentUser.isAdmin && (
+              {(currentUser.isAdmin ||
+                (currentUser.isMamash &&
+                  selectedTeams.length == 1 &&
+                  selectedTeams[0] == currentUser.team)) && (
                 <Fab
                   color="primary"
                   onClick={handleReset}
