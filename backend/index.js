@@ -13,73 +13,43 @@ const io = socketIo(server, {
   },
 });
 
-const corsOptions = {
-  origin: ["http://172.20.10.7:5173", "http://localhost:5173"],
-};
+require("./DBConnection");
+const path = __dirname + "/views/";
+const PORT = process.env.PORT || 4000;
+const { User } = require("./models/User");
+
 app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 4000;
+app.use(express.static(path));
 
-let attendanceData = [
-  {
-    id: 1,
-    name: "Admin User",
-    team: "צוות 1",
-    phone: "1234567890",
-    avatar: "",
-    present: false,
-    isHome: false,
-    isAdmin: true,
-    isMamash: false,
-  },
-  // Add more users with similar properties but isAdmin set to false and isHome randomly set to true or false
-  ...Array.from({ length: 20 }, (_, i) => ({
-    id: i + 2,
-    name: `User ${i + 2}`,
-    team: `צוות ${(i % 9) + 1}`,
-    phone: `123456789${i + 1}`,
-    avatar: "",
-    present: false,
-    isHome: Math.random() > 0.5,
-    isAdmin: false,
-    isMamash: false,
-  })),
-];
-
-app.get("/attendance", (req, res) => {
-  res.json(attendanceData);
+app.get("/", (req, res) => {
+  res.sendFile(path + "index.html");
 });
 
-app.get("/attendance", (req, res) => {
-  res.json(attendanceData);
-});
+app.get("/attendance", async (req, res) => {
+  try {
+    const users = await User.find();
 
-app.put("/users/:userId/mamash", (req, res) => {
-  const user = attendanceData.find((user) => user.id === +req.params.userId);
-
-  if (user) {
-    attendanceData = attendanceData.map((currentUser) => {
-      if (currentUser.team !== user.team) {
-        return currentUser;
-      }
-
-      return {
-        ...currentUser,
-        isMamash: currentUser.id === user.id ? true : false,
-      };
-    });
-
-    res.json(attendanceData);
-  } else {
-    res.status(404).send("User not found");
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
-app.get("/users/:username", (req, res) => {
-  const user = attendanceData.find((user) => user.name === req.params.username);
+app.put("/users/:userId/mamash", async (req, res) => {
+  const user = await User.findById(req.params.userId);
+
   if (user) {
-    res.json(user);
+    await User.updateMany({ team: user.team }, { $set: { isMamash: false } });
+
+    await User.findByIdAndUpdate(
+      req.params.userId,
+      { isMamash: true },
+      { new: true }
+    );
+
+    res.json(await User.find());
   } else {
     res.status(404).send("User not found");
   }
@@ -88,33 +58,31 @@ app.get("/users/:username", (req, res) => {
 io.on("connection", (socket) => {
   console.log("New client connected");
 
-  socket.on("updateAttendance", (updatedMember) => {
-    attendanceData = attendanceData.map((member) =>
-      member.id === updatedMember.id ? updatedMember : member
+  socket.on("updateAttendance", async (id, update) => {
+    io.emit(
+      "attendanceUpdate",
+      await User.findByIdAndUpdate(id, update, {
+        new: true,
+      })
     );
-
-    io.emit("attendanceUpdate", updatedMember);
   });
 
   socket.on("disconnect", () => {
     console.log("Client disconnected");
   });
 
-  socket.on("updateBulkAttendace", (key) => {
-    attendanceData = attendanceData.map((member) => {
-      if (key === "present") {
-        return {
-          ...member,
-          present: false,
-        };
-      }
-      return {
-        ...member,
-        isHome: false,
-      };
-    });
+  socket.on("updateBulkAttendance", async (key) => {
+    const update = { absentReason: "" };
 
-    io.emit("attendanceUpdateBulk", attendanceData);
+    if (key === "present") {
+      update.present = false;
+    } else {
+      update.isHome = false;
+    }
+
+    await User.updateMany({}, { $set: { ...update } });
+
+    io.emit("attendanceUpdateBulk", key);
   });
 });
 

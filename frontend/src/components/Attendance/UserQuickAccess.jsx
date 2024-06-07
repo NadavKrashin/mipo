@@ -15,7 +15,7 @@ const UserQuickAccess = ({ user, handleCheckboxChange }) => {
       <Checkbox
         edge="start"
         checked={user.present}
-        onChange={() => handleCheckboxChange(user.id)}
+        onChange={() => handleCheckboxChange(user._id)}
       />
 
       <ListItemText primary={user.name} secondary={user.team} />

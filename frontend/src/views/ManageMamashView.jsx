@@ -55,7 +55,7 @@ const ManageMamashView = ({ attendance, setAttendance }) => {
               <List>
                 {groupedUsers[team].map((user) => (
                   <ListItem
-                    key={user.id}
+                    key={user._id}
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
                     <ListItemAvatar>
@@ -64,7 +64,7 @@ const ManageMamashView = ({ attendance, setAttendance }) => {
                     <ListItemText primary={user.name} />
                     <Switch
                       checked={user.isMamash}
-                      onChange={() => handleMamashToggle(user.id)}
+                      onChange={() => handleMamashToggle(user._id)}
                     />
                   </ListItem>
                 ))}

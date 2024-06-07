@@ -5,10 +5,12 @@ import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";
 import ChecklistIcon from "@mui/icons-material/Checklist";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
-import { useNavigate } from "react-router-dom";
+import FeedIcon from "@mui/icons-material/Feed";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const Navbar = ({ onLogout, isAdmin, isMamash }) => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <AppBar position="static">
@@ -16,6 +18,7 @@ const Navbar = ({ onLogout, isAdmin, isMamash }) => {
         {(isAdmin || isMamash) && (
           <>
             <IconButton
+              disabled={location.pathname === "/"}
               edge="end"
               color="inherit"
               onClick={() => navigate("/")}
@@ -23,6 +26,7 @@ const Navbar = ({ onLogout, isAdmin, isMamash }) => {
               <ChecklistIcon />
             </IconButton>
             <IconButton
+              disabled={location.pathname === "/home-users"}
               edge="end"
               color="inherit"
               onClick={() => navigate("home-users")}
@@ -32,14 +36,26 @@ const Navbar = ({ onLogout, isAdmin, isMamash }) => {
           </>
         )}
         {isAdmin && (
-          <IconButton
-            edge="end"
-            color="inherit"
-            onClick={() => navigate("manage-mamash")}
-          >
-            <ManageAccountsIcon />
-          </IconButton>
+          <>
+            <IconButton
+              disabled={location.pathname === "/summary"}
+              edge="end"
+              color="inherit"
+              onClick={() => navigate("summary")}
+            >
+              <FeedIcon />
+            </IconButton>
+            <IconButton
+              disabled={location.pathname === "/manage-mamash"}
+              edge="end"
+              color="inherit"
+              onClick={() => navigate("manage-mamash")}
+            >
+              <ManageAccountsIcon />
+            </IconButton>
+          </>
         )}
+
         <IconButton edge="start" color="inherit" onClick={onLogout}>
           <LogoutIcon />
         </IconButton>

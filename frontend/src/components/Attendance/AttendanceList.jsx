@@ -1,49 +1,18 @@
 // src/components/AttendanceList.js
-import React from "react";
-import {
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Checkbox,
-  IconButton,
-  Avatar,
-  Badge,
-} from "@mui/material";
-import PhoneIcon from "@mui/icons-material/Phone";
-import StarIcon from "@mui/icons-material/Star";
+import React, { useState } from "react";
+import AttendanceItem from "./AttendanceItem";
+import { List } from "@mui/material";
 
-const AttendanceList = ({
-  attendance,
-  handleCheckboxChange,
-  handleCall,
-  //   handleHomeToggle,
-}) => {
+const AttendanceList = ({ attendance, handleCheckboxChange, handleCall }) => {
   return (
     <List>
       {attendance.map((member) => (
-        <ListItem key={member.id}>
-          <Checkbox
-            edge="start"
-            checked={member.present}
-            onChange={() => handleCheckboxChange(member.id)}
-          />
-          <IconButton onClick={() => handleCall(member.phone)}>
-            <PhoneIcon />
-          </IconButton>
-
-          <ListItemText primary={member.name} secondary={member.team} />
-
-          <ListItemAvatar sx={{ marginRight: "5px" }}>
-            <Badge
-              overlap="circular"
-              anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-              badgeContent={member.isMamash && <StarIcon color="warning"/>}
-            >
-              <Avatar alt={member.name} src={member.avatar} />
-            </Badge>
-          </ListItemAvatar>
-        </ListItem>
+        <AttendanceItem
+          key={member._id}
+          member={member}
+          handleCheckboxChange={handleCheckboxChange}
+          handleCall={handleCall}
+        />
       ))}
     </List>
   );

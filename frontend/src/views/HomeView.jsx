@@ -15,23 +15,29 @@ import TeamFilter from "../components/Attendance/TeamFilter";
 import RestartAltIcon from "@mui/icons-material/RestartAlt"; // Importing an icon to use with the button
 import { sendBulkUpdate } from "../socket";
 
-const HomeView = ({ attendace, setAttendance }) => {
+const HomeView = ({
+  attendance,
+  setAttendance,
+  currentUser,
+  setCurrentUser,
+}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeams, setSelectedTeams] = useState([]);
 
   const filteredHomeUsers = useMemo(
     () =>
-      attendace.filter(
+      attendance.filter(
         (user) =>
           user.isHome &&
           user.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
           (selectedTeams.length === 0 || selectedTeams.includes(user.team))
       ),
-    [searchQuery, selectedTeams, attendace]
+    [searchQuery, selectedTeams, attendance]
   );
 
   const handleReset = () => {
-    setAttendance(attendace.map((user) => ({ ...user, isHome: false })));
+    setAttendance(attendance.map((user) => ({ ...user, isHome: false })));
+    setCurrentUser({ ...currentUser, isHome: false });
     sendBulkUpdate("isHome");
   };
 
@@ -55,7 +61,7 @@ const HomeView = ({ attendace, setAttendance }) => {
           />
         </Box>
         <Chip
-          label={`בבית: ${attendace.length} / ${filteredHomeUsers.length} `}
+          label={`בבית: ${attendance.length} / ${filteredHomeUsers.length} `}
           color="primary"
           variant="outlined"
           sx={{ mb: 2, ml: 2, fontSize: "1rem", padding: "10px" }}
@@ -70,16 +76,13 @@ const HomeView = ({ attendace, setAttendance }) => {
         <List>
           {filteredHomeUsers.map((user) => (
             <ListItem
-              key={user.id}
+              key={user._id}
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
               <ListItemAvatar>
                 <Avatar alt={user.name} src={user.avatar} />
               </ListItemAvatar>
-              <ListItemText
-                primary={user.name}
-                secondary={`Team ${user.team}`}
-              />
+              <ListItemText primary={user.name} secondary={user.team} />
             </ListItem>
           ))}
         </List>

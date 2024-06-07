@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Box, TextField, Button, Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-const Login = ({ attendance, setLocalStorageUser }) => {
+const Login = ({ attendance, setCurrentUser }) => {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
@@ -12,8 +12,8 @@ const Login = ({ attendance, setLocalStorageUser }) => {
       const user = attendance.find(({ name }) => name === username);
 
       if (user) {
-        localStorage.setItem("user", JSON.stringify(user));
-        setLocalStorageUser(user);
+        localStorage.setItem("userId", JSON.stringify(user._id));
+        setCurrentUser(user);
         navigate("/");
       } else {
         alert("משתמש לא נמצא");

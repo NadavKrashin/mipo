@@ -1,6 +1,8 @@
 import io from "socket.io-client";
 
-const socket = io("http://localhost:4000"); // Adjust based on your backend server
+const SERVER_URL = import.meta.env.PROD ? "" : "http://localhost:4000";
+
+const socket = io(SERVER_URL, { transports: ["websocket"], secure: true }); // Adjust based on your backend server
 
 export const subscribeToUpdates = (callback) => {
   socket.on("attendanceUpdate", callback);
@@ -15,10 +17,10 @@ export const unsubscribeFromUpdates = () => {
   socket.off("attendanceUpdateBulk");
 };
 
-export const sendUpdate = (updatedMember) => {
-  socket.emit("updateAttendance", updatedMember);
+export const sendUpdate = (id, updatedProperties) => {
+  socket.emit("updateAttendance", id, updatedProperties);
 };
 
 export const sendBulkUpdate = (key) => {
-  socket.emit("updateBulkAttendace", key);
+  socket.emit("updateBulkAttendance", key);
 };

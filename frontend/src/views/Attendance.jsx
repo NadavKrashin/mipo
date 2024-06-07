@@ -11,39 +11,18 @@ import WhereToVoteIcon from "@mui/icons-material/WhereToVote";
 import LocationOffIcon from "@mui/icons-material/LocationOff";
 import ApartmentIcon from "@mui/icons-material/Apartment";
 
-import {
-  subscribeToUpdates,
-  subscribeToBulkUpdates,
-  unsubscribeFromUpdates,
-  sendUpdate,
-  sendBulkUpdate,
-} from "../socket";
+import { sendUpdate, sendBulkUpdate } from "../socket";
 
-const Attendance = ({ attendance, setAttendance, currentUser }) => {
+const Attendance = ({
+  attendance,
+  setAttendance,
+  currentUser,
+  setCurrentUser,
+}) => {
   const [showOnlyAbsent, setShowOnlyAbsent] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [presentCount, setPresentCount] = useState(0);
-
-  const handleUpdate = useCallback(
-    () => (updatedMember) => {
-      setAttendance((prevAttendance) =>
-        prevAttendance.map((member) =>
-          member.id === updatedMember.id ? updatedMember : member
-        )
-      );
-    },
-    [setAttendance]
-  );
-
-  useEffect(() => {
-    subscribeToUpdates(handleUpdate);
-    subscribeToBulkUpdates((data) => setAttendance(data));
-
-    return () => {
-      unsubscribeFromUpdates();
-    };
-  }, []);
 
   useEffect(() => {
     setPresentCount(attendance.filter((member) => member.present).length);
@@ -51,18 +30,27 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
 
   useEffect(() => {
     currentUser && !currentUser.isAdmin && setSelectedTeams([currentUser.team]);
-  }, [currentUser]);
+  }, [currentUser._id]);
 
   const handleCheckboxChange = (id) => {
     const newAttendance = attendance.map((updatedMember) =>
-      updatedMember.id === id
-        ? { ...updatedMember, present: !updatedMember.present }
+      updatedMember._id === id
+        ? {
+            ...updatedMember,
+            present: !updatedMember.present,
+            absentReason: "",
+          }
         : updatedMember
     );
 
     setAttendance(newAttendance);
+    const newUser = newAttendance.find(({ _id: currId }) => currId === id);
 
-    sendUpdate(newAttendance.find(({ id: currId }) => currId === id));
+    if (id === currentUser._id) {
+      setCurrentUser(newUser);
+    }
+
+    sendUpdate(newUser._id, { present: newUser.present, absentReason: "" });
   };
 
   const handleCall = (phone) => {
@@ -71,14 +59,17 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
 
   const handleHomeToggle = (id) => {
     const newAttendance = attendance.map((updatedMember) =>
-      updatedMember.id === id
+      updatedMember._id === id
         ? { ...updatedMember, isHome: !updatedMember.isHome }
         : updatedMember
     );
 
     setAttendance(newAttendance);
 
-    sendUpdate(newAttendance.find(({ id: currId }) => currId === id));
+    const newUser = newAttendance.find(({ _id: currId }) => currId === id);
+
+    setCurrentUser(newUser);
+    sendUpdate(newUser._id, { isHome: newUser.isHome });
   };
 
   const filteredAttendance = useMemo(
@@ -95,18 +86,25 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
   const handleReset = () => {
     if (!currentUser.isMamash) {
       sendBulkUpdate("present");
+      setAttendance(
+        attendance.map((user) => ({
+          ...user,
+          present: false,
+          absentReason: "",
+        }))
+      );
     } else {
       setAttendance(
         attendance.map((user) => {
-          if (user.team !== currentUser.team) {
-            return user;
+          if (user.team === currentUser.team) {
+            sendUpdate(user._id, { present: false, absentReason: "" });
+            return { ...user, present: false, absentReason: "" };
           }
 
-          const newUser = { ...user, present: false };
-          sendUpdate(newUser);
-          return newUser;
+          return user;
         })
       );
+      setCurrentUser({ ...currentUser, present: false, absentReason: "" });
     }
   };
 
@@ -115,7 +113,7 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
       <Box
         sx={{
           width: "100%",
-          maxWidth: 360,
+          maxWidth: 400,
           bgcolor: "background.paper",
           mx: "auto",
           my: 2,
@@ -144,7 +142,7 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
                 color="primary"
                 variant="outlined"
                 direction="rtl"
-                sx={{ mb: 2, ml: 2 }}
+                sx={{ mb: 2, ml: 2, mr: 1 }}
               />
               {(currentUser.isAdmin ||
                 (currentUser.isMamash &&
@@ -162,14 +160,14 @@ const Attendance = ({ attendance, setAttendance, currentUser }) => {
             <Box>
               <Fab
                 color={currentUser.isHome ? "warning" : "primary"}
-                onClick={() => handleHomeToggle(currentUser.id)}
+                onClick={() => handleHomeToggle(currentUser._id)}
                 sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
               >
                 {currentUser.isHome ? <ApartmentIcon /> : <HomeIcon />}
               </Fab>
               <Fab
                 color={currentUser.present ? "error" : "success"}
-                onClick={() => handleCheckboxChange(currentUser.id)}
+                onClick={() => handleCheckboxChange(currentUser._id)}
                 sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
               >
                 {currentUser.present ? (
