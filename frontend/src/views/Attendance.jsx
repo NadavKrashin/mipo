@@ -186,7 +186,6 @@ const Attendance = ({
           />
         </Box>
       </Box>
-      )
     </main>
   );
 };

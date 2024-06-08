@@ -1,5 +1,5 @@
 // src/components/AttendanceItem.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, memo, useMemo } from "react";
 import {
   ListItem,
   ListItemText,

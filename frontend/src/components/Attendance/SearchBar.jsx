@@ -10,7 +10,7 @@ const SearchBar = ({ searchQuery, setSearchQuery }) => {
       fullWidth
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
-      sx={{ mb: 2 }}
+      sx={{ mb: 2, px:0.5}}
     />
   );
 };

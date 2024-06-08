@@ -21,7 +21,7 @@ const TeamFilter = ({ selectedTeams, setSelectedTeams }) => {
   const teams = Array.from({ length: 8 }, (_, i) => `צוות ${i + 1}`);
 
   return (
-    <FormControl sx={{ mb: 2, width: "100%" }}>
+    <FormControl sx={{ mb: 2, width: "100%", pl: 0.5 }}>
       <InputLabel id="team-filter-label">הצגה לפי צוותים</InputLabel>
       <Select
         labelId="team-filter-label"

@@ -1,11 +1,12 @@
 // src/App.js
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Attendance from "./views/Attendance";
 import HomeUsers from "./views/HomeView";
 import Login from "./components/Login";
 import { fetchAttendanceData } from "./api";
 import {
+  socket,
   subscribeToBulkUpdates,
   subscribeToUpdates,
   unsubscribeFromUpdates,
@@ -14,7 +15,6 @@ import Navbar from "./components/Navbar";
 import ManageMamashView from "./views/ManageMamashView";
 import { Box, CircularProgress } from "@mui/material";
 import SummaryView from "./views/SummaryView";
-import { position } from "stylis";
 
 const App = () => {
   const [attendance, setAttendance] = useState([]);
@@ -39,9 +39,37 @@ const App = () => {
     };
 
     fetchData();
+
+    const handleVisibilityChange = () => {
+      if (!socket.connected) {
+        socket.connect();
+        fetchData();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, []);
 
   useEffect(() => {
+    const handleBulkUpdate = (key) => {
+      setAttendance(() => {
+        const update = { absentReason: "" };
+
+        if (key === "present") {
+          update.present = false;
+        } else {
+          update.isHome = false;
+        }
+
+        setCurrentUser({ ...currentUser, ...update });
+        return attendance.map((user) => ({ ...user, ...update }));
+      });
+    };
+
     const handleUpdate = (updatedMember) => {
       if (updatedMember._id === currentUser._id) {
         setCurrentUser(updatedMember);
@@ -55,25 +83,14 @@ const App = () => {
     };
 
     subscribeToUpdates(handleUpdate);
-    subscribeToBulkUpdates((key) =>
-      setAttendance(() => {
-        const update = { absentReason: "" };
-
-        if (key === "present") {
-          update.present = false;
-        } else {
-          update.isHome = false;
-        }
-
-        setCurrentUser({ ...currentUser, ...update });
-        return attendance.map((user) => ({ ...user, ...update }));
-      })
-    );
+    subscribeToBulkUpdates(handleBulkUpdate);
 
     return () => {
       unsubscribeFromUpdates();
     };
-  }, [attendance.length]);
+  }, [attendance.length, currentUser]);
+
+  useEffect(() => {}, []);
 
   const handleLogout = () => {
     localStorage.removeItem("userId");
