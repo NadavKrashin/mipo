@@ -1,10 +1,9 @@
-// src/App.js
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Attendance from "./views/Attendance";
 import HomeUsers from "./views/HomeView";
 import Login from "./components/Login";
-import { fetchAttendanceData } from "./api";
+import { fetchAttendanceData, getSegelUser } from "./api";
 import {
   socket,
   subscribeToBulkUpdates,
@@ -15,16 +14,24 @@ import Navbar from "./components/Navbar";
 import ManageMamashView from "./views/ManageMamashView";
 import { Box, CircularProgress } from "@mui/material";
 import SummaryView from "./views/SummaryView";
+import Footer from "./components/Footer";
 
 const App = () => {
   const [attendance, setAttendance] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
-    const fetchUser = (attendance) => {
+    const fetchUser = async (attendance) => {
       const savedUserId = JSON.parse(localStorage.getItem("userId"));
+
       if (savedUserId) {
-        setCurrentUser(attendance.find(({ _id }) => _id === savedUserId));
+        const user = attendance.find(({ _id }) => _id === savedUserId);
+
+        if (user) {
+          setCurrentUser(user);
+        } else {
+          setCurrentUser(await getSegelUser());
+        }
       }
     };
 
@@ -90,8 +97,6 @@ const App = () => {
     };
   }, [attendance.length, currentUser]);
 
-  useEffect(() => {}, []);
-
   const handleLogout = () => {
     localStorage.removeItem("userId");
     setCurrentUser(null);
@@ -142,6 +147,7 @@ const App = () => {
                       <ManageMamashView
                         attendance={attendance}
                         setAttendance={setAttendance}
+                        isSegel={currentUser.name === "סגל"}
                       />
                     }
                   ></Route>
@@ -153,10 +159,11 @@ const App = () => {
                 </>
               )}
             </Routes>
+            <Footer />
           </>
         ) : (
           <>
-            {attendance.length ? (
+            {attendance.length && !localStorage.getItem("userId") ? (
               <Login attendance={attendance} setCurrentUser={setCurrentUser} />
             ) : (
               <Box

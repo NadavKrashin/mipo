@@ -29,17 +29,27 @@ app.get("/", (req, res) => {
   res.sendFile(path + "index.html");
 });
 
+app.get("/segel", async (req, res) => {
+  try {
+    res.json(await User.findOne({ name: "סגל" }));
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+const getAllUsers = async () =>
+  User.find({ name: { $ne: "סגל" } }).sort({
+    team: 1,
+  });
+
 app.get("/attendance", async (req, res) => {
   try {
-    const users = await User.find();
-
-    res.json(users);
+    res.json(await getAllUsers());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-app.put("/users/:userId/mamash", async (req, res) => {
+app.patch("/users/:userId/mamash", async (req, res) => {
   const user = await User.findById(req.params.userId);
 
   if (user) {
@@ -51,7 +61,28 @@ app.put("/users/:userId/mamash", async (req, res) => {
       { new: true }
     );
 
-    res.json(await User.find());
+    res.json(await getAllUsers());
+  } else {
+    res.status(404).send("User not found");
+  }
+});
+
+app.patch("/users/:userId/admin", async (req, res) => {
+  const user = await User.findById(req.params.userId);
+
+  if (user) {
+    await User.updateMany(
+      { name: { $ne: "סגל" } },
+      { $set: { isAdmin: false } }
+    );
+
+    await User.findByIdAndUpdate(
+      req.params.userId,
+      { isAdmin: true, isMamash: false },
+      { new: true }
+    );
+
+    res.json(await getAllUsers());
   } else {
     res.status(404).send("User not found");
   }

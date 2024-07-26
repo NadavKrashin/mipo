@@ -1,5 +1,3 @@
-// src/components/SearchBar.js
-import React from "react";
 import { TextField } from "@mui/material";
 
 const SearchBar = ({ searchQuery, setSearchQuery }) => {
@@ -10,7 +8,7 @@ const SearchBar = ({ searchQuery, setSearchQuery }) => {
       fullWidth
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
-      sx={{ mb: 2, px:0.5}}
+      sx={{ mb: 2, px: 0.5 }}
     />
   );
 };

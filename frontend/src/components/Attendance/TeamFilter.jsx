@@ -1,5 +1,3 @@
-// src/components/TeamFilter.js
-import React from "react";
 import {
   FormControl,
   InputLabel,
@@ -9,8 +7,9 @@ import {
   Box,
   Chip,
 } from "@mui/material";
+import { useMemo } from "react";
 
-const TeamFilter = ({ selectedTeams, setSelectedTeams }) => {
+const TeamFilter = ({ selectedTeams, setSelectedTeams, attendance }) => {
   const handleChange = (event) => {
     const {
       target: { value },
@@ -18,7 +17,10 @@ const TeamFilter = ({ selectedTeams, setSelectedTeams }) => {
     setSelectedTeams(value);
   };
 
-  const teams = Array.from({ length: 8 }, (_, i) => `צוות ${i + 1}`);
+  const teams = useMemo(
+    () => [...new Set(attendance.map((user) => user.team))],
+    [attendance]
+  );
 
   return (
     <FormControl sx={{ mb: 2, width: "100%", pl: 0.5 }}>

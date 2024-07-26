@@ -11,7 +11,7 @@ export const socket = io(SERVER_URL, {
   reconnectionDelay: 1000,
   reconnectionDelayMax: 5000,
   timeout: 20000,
-}); // Adjust based on your backend server
+});
 
 export const subscribeToUpdates = (callback) => {
   socket.on("attendanceUpdate", callback);

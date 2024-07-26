@@ -1,5 +1,4 @@
 // src/components/Navbar.js
-import React from "react";
 import { AppBar, Toolbar, IconButton } from "@mui/material";
 import LogoutIcon from "@mui/icons-material/Logout";
 import HomeIcon from "@mui/icons-material/Home";

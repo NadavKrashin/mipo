@@ -1,5 +1,3 @@
-// src/components/ToggleSwitch.js
-import React from "react";
 import { FormControlLabel, Switch } from "@mui/material";
 
 const ToggleSwitch = ({ showOnlyAbsent, setShowOnlyAbsent }) => {

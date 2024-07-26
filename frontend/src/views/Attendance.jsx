@@ -1,5 +1,4 @@
-// src/components/Attendance.js
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Box, Chip, Fab } from "@mui/material";
 import RestartAltIcon from "@mui/icons-material/RestartAlt"; // Importing an icon to use with the button
 import SearchBar from "../components/Attendance/SearchBar";
@@ -24,9 +23,22 @@ const Attendance = ({
   const [selectedTeams, setSelectedTeams] = useState([]);
   const [presentCount, setPresentCount] = useState(0);
 
+  const filteredAttendance = useMemo(
+    () =>
+      attendance.filter(
+        (member) =>
+          member.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+          (!showOnlyAbsent || !member.present) &&
+          (selectedTeams.length === 0 || selectedTeams.includes(member.team))
+      ),
+    [attendance, searchQuery, selectedTeams, showOnlyAbsent]
+  );
+
   useEffect(() => {
-    setPresentCount(attendance.filter((member) => member.present).length);
-  }, [attendance]);
+    setPresentCount(
+      filteredAttendance.filter((member) => member.present).length
+    );
+  }, [attendance, filteredAttendance]);
 
   useEffect(() => {
     currentUser && !currentUser.isAdmin && setSelectedTeams([currentUser.team]);
@@ -72,17 +84,6 @@ const Attendance = ({
     sendUpdate(newUser._id, { isHome: newUser.isHome });
   };
 
-  const filteredAttendance = useMemo(
-    () =>
-      attendance.filter(
-        (member) =>
-          member.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-          (!showOnlyAbsent || !member.present) &&
-          (selectedTeams.length === 0 || selectedTeams.includes(member.team))
-      ),
-    [attendance, searchQuery, selectedTeams, showOnlyAbsent]
-  );
-
   const handleReset = () => {
     if (!currentUser.isMamash) {
       sendBulkUpdate("present");
@@ -125,7 +126,14 @@ const Attendance = ({
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
-          <Box sx={{ display: "flex", justifyContent: "space-around", mb: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-around",
+              alignItems: "center",
+              mb: 2,
+            }}
+          >
             <ToggleSwitch
               showOnlyAbsent={showOnlyAbsent}
               setShowOnlyAbsent={setShowOnlyAbsent}
@@ -133,12 +141,13 @@ const Attendance = ({
             <TeamFilter
               selectedTeams={selectedTeams}
               setSelectedTeams={setSelectedTeams}
+              attendance={attendance}
             />
           </Box>
           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
             <Box>
               <Chip
-                label={`נמצאים: ${attendance.length} / ${presentCount}`}
+                label={`נמצאים: ${filteredAttendance.length} / ${presentCount}`}
                 color="primary"
                 variant="outlined"
                 direction="rtl"
@@ -157,26 +166,28 @@ const Attendance = ({
                 </Fab>
               )}
             </Box>
-            <Box>
-              <Fab
-                color={currentUser.isHome ? "warning" : "primary"}
-                onClick={() => handleHomeToggle(currentUser._id)}
-                sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
-              >
-                {currentUser.isHome ? <ApartmentIcon /> : <HomeIcon />}
-              </Fab>
-              <Fab
-                color={currentUser.present ? "error" : "success"}
-                onClick={() => handleCheckboxChange(currentUser._id)}
-                sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
-              >
-                {currentUser.present ? (
-                  <LocationOffIcon />
-                ) : (
-                  <WhereToVoteIcon />
-                )}
-              </Fab>
-            </Box>
+            {currentUser.name !== "סגל" && (
+              <Box>
+                <Fab
+                  color={currentUser.isHome ? "warning" : "primary"}
+                  onClick={() => handleHomeToggle(currentUser._id)}
+                  sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
+                >
+                  {currentUser.isHome ? <ApartmentIcon /> : <HomeIcon />}
+                </Fab>
+                <Fab
+                  color={currentUser.present ? "error" : "success"}
+                  onClick={() => handleCheckboxChange(currentUser._id)}
+                  sx={{ ml: 2, mb: 2, width: 40, height: 40 }}
+                >
+                  {currentUser.present ? (
+                    <LocationOffIcon />
+                  ) : (
+                    <WhereToVoteIcon />
+                  )}
+                </Fab>
+              </Box>
+            )}
           </Box>
 
           <AttendanceList

@@ -9,7 +9,7 @@ import {
   styled,
   tableCellClasses,
 } from "@mui/material";
-import React from "react";
+import { useRef } from "react";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
@@ -28,9 +28,11 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 const AbsentTable = ({ absentAttendance }) => {
+  const tableRef = useRef(null);
+
   return (
     <TableContainer sx={{ marginTop: "15px" }} component={Paper}>
-      <Table>
+      <Table ref={tableRef}>
         <TableHead>
           <TableRow>
             <StyledTableCell>שם</StyledTableCell>

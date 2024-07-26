@@ -1,15 +1,22 @@
 // src/components/Login.js
-import React, { useState } from "react";
+import { useState } from "react";
 import { Box, TextField, Button, Autocomplete } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { getSegelUser } from "../api";
 
 const Login = ({ attendance, setCurrentUser }) => {
   const [username, setUsername] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    let user;
+
     try {
-      const user = attendance.find(({ name }) => name === username);
+      if (username === "סגל") {
+        user = await getSegelUser();
+      } else {
+        user = attendance.find(({ name }) => name === username);
+      }
 
       if (user) {
         localStorage.setItem("userId", JSON.stringify(user._id));
@@ -36,7 +43,7 @@ const Login = ({ attendance, setCurrentUser }) => {
       }}
     >
       <Autocomplete
-        options={attendance.map((user) => user.name)}
+        options={[...attendance.map((user) => user.name), "סגל"]}
         onInputChange={(event, newInputValue) => {
           setUsername(newInputValue);
         }}

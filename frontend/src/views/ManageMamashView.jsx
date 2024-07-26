@@ -1,10 +1,7 @@
-import React from "react";
 import {
   Box,
   List,
   ListItem,
-  ListItemAvatar,
-  Avatar,
   ListItemText,
   Switch,
   Typography,
@@ -14,15 +11,25 @@ import {
   AccordionDetails,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { updateUserMamashStatus } from "../api"; // API functions for fetching and updating users
+import { updateUserMamashStatus, updateUserAdminStatus } from "../api";
+import AvatarItem from "../components/Attendance/AvatarItem";
 
-const ManageMamashView = ({ attendance, setAttendance }) => {
+const ManageMamashView = ({ attendance, setAttendance, isSegel }) => {
   const handleMamashToggle = async (userId) => {
     try {
       const updatedAttendance = await updateUserMamashStatus(userId);
       setAttendance(updatedAttendance);
     } catch (error) {
       console.error("Error updating Mamash status:", error);
+    }
+  };
+
+  const handleAdminToggle = async (userId) => {
+    try {
+      const updatedAttendance = await updateUserAdminStatus(userId);
+      setAttendance(updatedAttendance);
+    } catch (error) {
+      console.error("Error updating Admin status:", error);
     }
   };
 
@@ -34,6 +41,15 @@ const ManageMamashView = ({ attendance, setAttendance }) => {
     return groups;
   }, {});
 
+  const HandleSwitch = ({ title, value, onChange }) => (
+    <Box
+      sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+    >
+      <Typography>{title}</Typography>
+      <Switch checked={value} onChange={onChange} />
+    </Box>
+  );
+
   return (
     <Box
       sx={{
@@ -42,9 +58,16 @@ const ManageMamashView = ({ attendance, setAttendance }) => {
         bgcolor: "background.paper",
         mx: "auto",
         my: 2,
-        direction: "rtl",
       }}
+      dir="rtl"
     >
+      <Typography
+        sx={{ textAlign: "center", fontWeight: "bold", marginBottom: "5px" }}
+        variant="h5"
+      >
+        ניהול הרשאות צוערים
+      </Typography>
+
       {Object.keys(groupedUsers).map((team) => (
         <Box key={team} sx={{ mb: 2 }}>
           <Accordion>
@@ -58,14 +81,20 @@ const ManageMamashView = ({ attendance, setAttendance }) => {
                     key={user._id}
                     sx={{ display: "flex", justifyContent: "space-between" }}
                   >
-                    <ListItemAvatar>
-                      <Avatar alt={user.name} src={user.avatar} />
-                    </ListItemAvatar>
+                    <AvatarItem member={user} />
                     <ListItemText primary={user.name} />
-                    <Switch
-                      checked={user.isMamash}
+                    <HandleSwitch
+                      title={"ממ״ש"}
+                      value={user.isMamash}
                       onChange={() => handleMamashToggle(user._id)}
                     />
+                    {isSegel && (
+                      <HandleSwitch
+                        title={"ס.מ״פ"}
+                        value={user.isAdmin}
+                        onChange={() => handleAdminToggle(user._id)}
+                      />
+                    )}
                   </ListItem>
                 ))}
               </List>

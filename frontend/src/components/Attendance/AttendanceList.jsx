@@ -1,5 +1,3 @@
-// src/components/AttendanceList.js
-import React, { useState } from "react";
 import AttendanceItem from "./AttendanceItem";
 import { List } from "@mui/material";
 

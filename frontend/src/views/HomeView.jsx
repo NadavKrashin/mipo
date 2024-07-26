@@ -1,19 +1,10 @@
-// src/components/HomeUsers.js
-import React, { useMemo, useState } from "react";
-import {
-  Avatar,
-  Box,
-  Chip,
-  Fab,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-} from "@mui/material";
+import { useMemo, useState } from "react";
+import { Box, Chip, Fab, List, ListItem, ListItemText } from "@mui/material";
 import SearchBar from "../components/Attendance/SearchBar";
 import TeamFilter from "../components/Attendance/TeamFilter";
 import RestartAltIcon from "@mui/icons-material/RestartAlt"; // Importing an icon to use with the button
 import { sendBulkUpdate } from "../socket";
+import AvatarItem from "../components/Attendance/AvatarItem";
 
 const HomeView = ({
   attendance,
@@ -58,6 +49,7 @@ const HomeView = ({
           <TeamFilter
             selectedTeams={selectedTeams}
             setSelectedTeams={setSelectedTeams}
+            attendance={attendance}
           />
         </Box>
         <Chip
@@ -79,9 +71,7 @@ const HomeView = ({
               key={user._id}
               sx={{ display: "flex", justifyContent: "space-between" }}
             >
-              <ListItemAvatar>
-                <Avatar alt={user.name} src={user.avatar} />
-              </ListItemAvatar>
+              <AvatarItem member={user} />
               <ListItemText primary={user.name} secondary={user.team} />
             </ListItem>
           ))}

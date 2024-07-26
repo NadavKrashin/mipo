@@ -1,26 +1,23 @@
-// src/components/AttendanceItem.js
-import React, { useEffect, useState, memo, useMemo } from "react";
+import { useEffect, useState } from "react";
 import {
   ListItem,
   ListItemText,
   Checkbox,
   IconButton,
-  Avatar,
-  ListItemAvatar,
-  Badge,
   FormControl,
   InputLabel,
   InputAdornment,
   OutlinedInput,
   Box,
 } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 import PhoneIcon from "@mui/icons-material/Phone";
 import PhoneDisabledIcon from "@mui/icons-material/PhoneDisabled";
-import StarIcon from "@mui/icons-material/Star";
 import SaveIcon from "@mui/icons-material/Save";
 import IndeterminateCheckBoxIcon from "@mui/icons-material/IndeterminateCheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import { sendUpdate } from "../../socket";
+import AvatarItem from "./AvatarItem";
 
 const AttendanceItem = ({ member, handleCheckboxChange, handleCall }) => {
   const [absentReason, setAbsentReason] = useState(member.absentReason);
@@ -33,6 +30,40 @@ const AttendanceItem = ({ member, handleCheckboxChange, handleCall }) => {
   useEffect(() => {
     setAbsentReason(member.absentReason);
   }, [member.absentReason]);
+
+  const renderAbsentInput = (member) => {
+    const uniqueId = uuidv4();
+
+    return (
+      <>
+        {!absentReason && (
+          <InputLabel shrink htmlFor={uniqueId}>
+            איפה?
+          </InputLabel>
+        )}
+        <OutlinedInput
+          value={absentReason}
+          onChange={(e) => setAbsentReason(e.target.value)}
+          size="small"
+          id={uniqueId}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                disabled={
+                  member.absentReason === absentReason && !!member.absentReason
+                }
+                aria-label="toggle password visibility"
+                onClick={handleSave}
+                edge="end"
+              >
+                <SaveIcon />
+              </IconButton>
+            </InputAdornment>
+          }
+        />
+      </>
+    );
+  };
 
   return (
     <ListItem key={member._id} sx={{ paddingRight: 1 }}>
@@ -65,50 +96,11 @@ const AttendanceItem = ({ member, handleCheckboxChange, handleCall }) => {
         sx={{ minWidth: "35%", maxWidth: "35%" }}
         variant="filled"
       >
-        {!absentReason && (
-          <InputLabel shrink htmlFor="absent-reason-input">
-            איפה?
-          </InputLabel>
-        )}
-        <OutlinedInput
-          value={absentReason}
-          onChange={(e) => setAbsentReason(e.target.value)}
-          size="small"
-          id="absent-reason-input"
-          endAdornment={
-            <InputAdornment position="end">
-              <IconButton
-                disabled={
-                  member.absentReason === absentReason && !!member.absentReason
-                }
-                aria-label="toggle password visibility"
-                onClick={handleSave}
-                edge="end"
-              >
-                <SaveIcon />
-              </IconButton>
-            </InputAdornment>
-          }
-        />
+        {renderAbsentInput(member)}
       </FormControl>
 
       <ListItemText primary={member.name} secondary={member.team} />
-      <ListItemAvatar sx={{ marginRight: "5px" }}>
-        <Badge
-          overlap="circular"
-          anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-          badgeContent={member.isMamash && <StarIcon color="warning" />}
-        >
-          <Avatar
-            alt={member.name}
-            src={
-              member.avatar
-                ? member.avatar
-                : `https://api.dicebear.com/8.x/adventurer/svg?seed=${member.name}`
-            }
-          />
-        </Badge>
-      </ListItemAvatar>
+      <AvatarItem member={member} />
     </ListItem>
   );
 };

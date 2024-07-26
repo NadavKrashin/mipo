@@ -5,7 +5,7 @@ const mongoURI =
   "mongodb+srv://NadavKrashin:47GH56gsugcRzYrD@mipo.ut2suld.mongodb.net/?retryWrites=true&w=majority&appName=MiPo";
 
 mongoose
-  .connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
@@ -13,7 +13,6 @@ const userSchema = new mongoose.Schema({
   name: String,
   team: String,
   phone: String,
-  avatar: String,
   present: Boolean,
   isHome: Boolean,
   isMamash: Boolean,
@@ -400,7 +399,8 @@ const users = [
     name: "ארי וייס",
     team: "צוות 4",
     phone: "",
-    avatar: "",
+    avatar:
+      "https://res.cloudinary.com/nadavkrashin/image/upload/f_auto,q_auto/v1/",
     present: false,
     isHome: false,
     isMamash: false,
