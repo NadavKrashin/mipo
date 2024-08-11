@@ -163,7 +163,7 @@ const App = () => {
           </>
         ) : (
           <>
-            {attendance.length && !localStorage.getItem("userId") ? (
+            {attendance.length ? (
               <Login attendance={attendance} setCurrentUser={setCurrentUser} />
             ) : (
               <Box

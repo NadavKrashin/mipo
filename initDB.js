@@ -2,7 +2,7 @@ const xlsx = require("xlsx");
 
 const mongoose = require("mongoose");
 
-const workbook = xlsx.readFile("./output.xlsx");
+const workbook = xlsx.readFile("./mipo_template.xlsx");
 const sheetName = workbook.SheetNames[0];
 const worksheet = workbook.Sheets[sheetName];
 
@@ -13,7 +13,7 @@ const users = jsonData.map((entry) => {
 
   return {
     name,
-    team: entry.Team || entry.team || "",
+    team: `${entry.Team || entry.team || ""} צוות`,
     phone: entry.Phone || entry.phone || "",
     avatar: `https://api.dicebear.com/8.x/adventurer/svg?seed=${name}`,
     present: false,
