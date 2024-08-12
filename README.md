@@ -119,6 +119,19 @@ Start the server
 
 _You may change anything to your preference_
 
+## Deploy your own MiPo with Fly.io
+**1.** Build frontend
+```bash
+  npm run build
+```
+**2.** Put frontend/dist files inside backend/views directory
+
+**3.** Deploy with Fly.io (make sure to setup your Fly.io account [Fly.io](https://fly.io))
+```bash
+  fly deploy
+```
+
+
 ## Authors
 
 - [@NadavKrashin](https://www.github.com/NadavKrashin)
