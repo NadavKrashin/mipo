@@ -44,7 +44,10 @@ const AbsentTable = ({ absentAttendance }) => {
           {absentAttendance.map((user) => (
             <StyledTableRow
               key={user._id}
-              sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+              sx={{
+                direction: "rtl",
+                "&:last-child td, &:last-child th": { border: 0 },
+              }}
             >
               <StyledTableCell component="th" scope="row">
                 {user.name}

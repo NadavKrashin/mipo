@@ -72,7 +72,9 @@ const ManageMamashView = ({ attendance, setAttendance, isSegel }) => {
         <Box key={team} sx={{ mb: 2 }}>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h6">צוות {team}</Typography>
+              <Typography variant="h6" sx={{ direction: "rtl" }}>
+                {team}
+              </Typography>
             </AccordionSummary>
             <AccordionDetails>
               <List>
