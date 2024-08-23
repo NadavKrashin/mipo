@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-const mongoURI =
-  "mongodb+srv://NadavKrashin:47GH56gsugcRzYrD@mipo.ut2suld.mongodb.net/pluga_b_brosh?retryWrites=true&w=majority&appName=MiPo";
+const mongoURI = process.env.MONGO_URI;
 mongoose
   .connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
