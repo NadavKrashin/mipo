@@ -18,6 +18,7 @@ const SummaryView = () => {
   useEffect(() => {
     const fetchData = async () => {
       const attendance = await fetchAttendanceData();
+
       setAttendance(attendance);
     };
 
@@ -32,7 +33,7 @@ const SummaryView = () => {
   const getTableDataAsString = (data) => {
     const filteredData = data.map(({ name, team, absentReason }) => ({
       name,
-      team,
+      team: team.split(" ").reverse().join(" "),
       absentReason,
     }));
 

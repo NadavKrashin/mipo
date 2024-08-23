@@ -19,6 +19,7 @@ import Footer from "./components/Footer";
 const App = () => {
   const [attendance, setAttendance] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isFetchingSegel, setIsFetchingSegel] = useState(false);
 
   useEffect(() => {
     const fetchUser = async (attendance) => {
@@ -30,8 +31,11 @@ const App = () => {
         if (user) {
           setCurrentUser(user);
         } else {
+          setIsFetchingSegel(true);
           setCurrentUser(await getSegelUser());
         }
+
+        setIsFetchingSegel(false);
       }
     };
 
@@ -163,7 +167,7 @@ const App = () => {
           </>
         ) : (
           <>
-            {attendance.length ? (
+            {attendance.length && !isFetchingSegel ? (
               <Login attendance={attendance} setCurrentUser={setCurrentUser} />
             ) : (
               <Box

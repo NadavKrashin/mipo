@@ -13,7 +13,8 @@ const Footer = () => {
       }}
     >
       <Typography variant="body2" color="textSecondary">
-        © {new Date().getFullYear()} All rights reserved - Nadav Krashin
+        © {new Date().getFullYear()} All rights reserved - Nadav Krashin | נדב
+        קרשין
       </Typography>
     </Box>
   );
