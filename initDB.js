@@ -1,5 +1,5 @@
 const xlsx = require("xlsx");
-
+require("dotenv").config();
 const mongoose = require("mongoose");
 
 const workbook = xlsx.readFile("./mipo_template.xlsx");
@@ -24,8 +24,7 @@ const users = jsonData.map((entry) => {
   };
 });
 
-const mongoURI =
-  "mongodb+srv://NadavKrashin:47GH56gsugcRzYrD@mipo.ut2suld.mongodb.net/?retryWrites=true&w=majority&appName=MiPo";
+const mongoURI = process.env.MONGO_URI;
 
 mongoose
   .connect(mongoURI)

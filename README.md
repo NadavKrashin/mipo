@@ -8,6 +8,10 @@
 
 - Clone or Fork this project
 
+- Create a .env file with a MONGO_URI variable
+
+- Contact me to get your MONGO_URI value
+
 - Fill mipo_template.xlsx with soldiers data
 
 - Run initDB.js script to fill DB Data from the excel
@@ -120,17 +124,20 @@ Start the server
 _You may change anything to your preference_
 
 ## Deploy your own MiPo with Fly.io
+
 **1.** Build frontend
+
 ```bash
   npm run build
 ```
+
 **2.** Put frontend/dist files inside backend/views directory
 
 **3.** Deploy with Fly.io (make sure to setup your Fly.io account [Fly.io](https://fly.io))
+
 ```bash
   fly deploy
 ```
-
 
 ## Authors
 
