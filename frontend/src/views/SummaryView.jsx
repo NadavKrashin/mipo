@@ -18,6 +18,7 @@ const SummaryView = () => {
   useEffect(() => {
     const fetchData = async () => {
       const attendance = await fetchAttendanceData();
+
       setAttendance(attendance);
     };
 
@@ -32,7 +33,7 @@ const SummaryView = () => {
   const getTableDataAsString = (data) => {
     const filteredData = data.map(({ name, team, absentReason }) => ({
       name,
-      team,
+      team: team.split(" ").reverse().join(" "),
       absentReason,
     }));
 
@@ -80,7 +81,7 @@ const SummaryView = () => {
               variant="h5"
               sx={{ fontWeight: "bold", textAlign: "center" }}
             >
-              מצב״ה השלמה טכנולוגית 015
+              מצב״ה פלוגה ב׳ גדוד ברוש
             </Typography>
             <Typography gutterBottom variant="h6">
               מצ״ל: {attendance.length}
