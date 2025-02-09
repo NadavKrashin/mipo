@@ -1,7 +1,6 @@
-const mongoose = require("mongoose");
+import { connect } from "mongoose";
 
 const mongoURI = process.env.MONGO_URI;
-mongoose
-  .connect(mongoURI)
+connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));

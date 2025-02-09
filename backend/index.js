@@ -1,13 +1,13 @@
 // backend/server.js
 require("dotenv").config({ path: "../.env" });
-const express = require("express");
-const http = require("http");
-const socketIo = require("socket.io");
-const cors = require("cors");
+import express, { json } from "express";
+import { createServer } from "http";
+import { Server } from "socket.io";
+import cors from "cors";
 
 const app = express();
-const server = http.createServer(app);
-const io = socketIo(server, {
+const server = createServer(app);
+const io = Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -16,13 +16,13 @@ const io = socketIo(server, {
   pingTimeout: 5000,
 });
 
-require("./DBConnection");
+import "./DBConnection.js";
 const path = __dirname + "/views/";
 const PORT = process.env.PORT || 4000;
-const { User } = require("./models/User");
+import { User } from "./models/User.js";
 
 app.use(cors());
-app.use(express.json());
+app.use(json());
 
 app.use(express.static(path));
 

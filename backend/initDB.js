@@ -1,15 +1,14 @@
-const mongoose = require("mongoose");
+import { connect, Schema, model, connection } from "mongoose";
 require("dotenv").config();
 
 const mongoURI =
   "mongodb+srv://NadavKrashin:47GH56gsugcRzYrD@mipo.ut2suld.mongodb.net/?retryWrites=true&w=majority&appName=MiPo";
 
-mongoose
-  .connect(mongoURI)
+connect(mongoURI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
   name: String,
   team: String,
   phone: String,
@@ -20,7 +19,7 @@ const userSchema = new mongoose.Schema({
   absentReason: String,
 });
 
-const User = mongoose.model("User", userSchema);
+const User = model("User", userSchema);
 
 const users = [
   {
@@ -953,7 +952,7 @@ User.deleteMany({}).then(() => {
   User.insertMany(users)
     .then(() => {
       console.log("Users added");
-      mongoose.connection.close();
+      connection.close();
     })
     .catch((err) => console.log(err));
 });
