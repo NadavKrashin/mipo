@@ -1,13 +1,17 @@
 // backend/server.js
-require("dotenv").config({ path: "../.env" });
+import dotenv from "dotenv";
+dotenv.config({ path: "../.env" });
+
 import express, { json } from "express";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cors from "cors";
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 const app = express();
 const server = createServer(app);
-const io = Server(server, {
+const io = new Server(server, {
   cors: {
     origin: "*",
     methods: ["GET", "POST"],
@@ -17,6 +21,8 @@ const io = Server(server, {
 });
 
 import "./DBConnection.js";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const path = __dirname + "/views/";
 const PORT = process.env.PORT || 4000;
 import { User } from "./models/User.js";
