@@ -16,7 +16,7 @@
 
 - Run initDB.js script to fill DB Data from the excel
 
-- Visit https://mipo.fly.dev to view your PWA app.(Add to home screen to use it like a native application)
+- Visit https://mipo-pluga-b.fly.dev to view your PWA app.(Add to home screen to use it like a native application)
 
 ## Demo
 

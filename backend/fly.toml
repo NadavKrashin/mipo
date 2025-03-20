@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for mipo on 2024-05-31T20:10:11+03:00
+# fly.toml app configuration file generated for mipo-pluga-b-brosh on 2024-08-24T01:29:31+03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'mipo'
+app = 'mipo-pluga-b-brosh'
 primary_region = 'ams'
 
 [build]
@@ -11,10 +11,12 @@ primary_region = 'ams'
 [http_service]
   internal_port = 4000
   force_https = true
-  auto_stop_machines = true
+  auto_stop_machines = 'stop'
   auto_start_machines = true
   min_machines_running = 0
   processes = ['app']
 
 [[vm]]
-  size = 'shared-cpu-1x'
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1

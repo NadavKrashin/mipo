@@ -31,25 +31,41 @@ const SummaryView = () => {
   );
 
   const getTableDataAsString = (data) => {
+    const summaryData = `מצ״ל: ${attendance.length}\nמצ״ן: ${
+      attendance.length - absentAttendance.length
+    }\nפירוט חסרים:`;
+
     const filteredData = data.map(({ name, team, absentReason }) => ({
       name,
       team: team.split(" ").reverse().join(" "),
       absentReason,
     }));
 
-    return filteredData.map((row) => Object.values(row).join(", ")).join("\n");
+    return `${summaryData}\n${filteredData
+      .map((row) => Object.values(row).join(", "))
+      .join("\n")}`;
   };
 
-  const generateWhatsAppLink = (tableData) => {
-    const message = encodeURIComponent(tableData);
-    return `https://wa.me/?text=${message}`;
-  };
+  const ShareTableButton = () => {
+    const handleShare = async () => {
+      const tableDataString = getTableDataAsString(absentAttendance);
 
-  const ShareTableButton = ({ data }) => {
-    const handleShare = () => {
-      const tableDataString = getTableDataAsString(data);
-      const whatsappLink = generateWhatsAppLink(tableDataString);
-      window.open(whatsappLink, "_blank");
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "מצב״ה",
+            text: tableDataString,
+          });
+          console.log("Data sent successfully");
+        } catch (error) {
+          console.log("Error sharing data:", error);
+        }
+      } else {
+        navigator.clipboard.writeText(tableDataString);
+        alert(
+          "Web Share API is not supported in your browser. Content copied to clipboard."
+        );
+      }
     };
 
     return (
@@ -81,7 +97,7 @@ const SummaryView = () => {
               variant="h5"
               sx={{ fontWeight: "bold", textAlign: "center" }}
             >
-              מצב״ה השלמה טכנולוגית 015
+              מצב״ה פלוגה ב׳ גדוד ברוש
             </Typography>
             <Typography gutterBottom variant="h6">
               מצ״ל: {attendance.length}
@@ -99,7 +115,7 @@ const SummaryView = () => {
               }}
             >
               <Typography variant="subtitle1">פירוט:</Typography>
-              <ShareTableButton data={absentAttendance} />
+              <ShareTableButton />
             </Box>
             <AbsentTable absentAttendance={absentAttendance} />
           </CardContent>
